@@ -327,16 +327,18 @@ class TelegramBot(MixinBase):
         bot_token = self.config.BOT_TOKEN
         db_uri = self.config.DB_URI
 
-        if api_id in text:
-            text = text.replace(api_id, "[REDACTED]")
-        if api_hash in text:
-            text = text.replace(api_hash, "[REDACTED]")
-        if bot_token in text:
-            text = text.replace(bot_token, "[REDACTED]")
-        if db_uri in text:
-            text = text.replace(db_uri, "[REDACTED]")
+        redacted_text = ""
+        parts = text.split('"')
+        for i in range(len(parts)):
+            if i % 2 == 0:
+                redacted_text += parts[i]
+            else:
+                redacted_text += parts[i].replace(api_id, "[REDACTED]")
+                redacted_text = redacted_text.replace(api_hash, "[REDACTED]")
+                redacted_text = redacted_text.replace(bot_token, "[REDACTED]")
+                redacted_text = redacted_text.replace(db_uri, "[REDACTED]")
 
-        return text
+        return redacted_text
 
     async def respond(
         self: "Anjani",
